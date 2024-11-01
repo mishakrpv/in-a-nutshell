@@ -1,0 +1,2 @@
+# *.nutshell syntax example
+map(<C-r>) to (echo 'Control + R pressed')
