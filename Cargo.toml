@@ -2,6 +2,14 @@
 name = "nutshell"
 version = "0.1.0"
 edition = "2021"
+authors = ["Misha Karpov mishavkrpv@gmail.com"]
+license = "MIT"
+description = "A tool designed to manage hotkey mappings for executing terminal commands"
+readme = "README.md"
+homepage = "https://github.com/mishakrpv/in-a-nutshell"
+repository = "https://github.com/mishakrpv/in-a-nutshell"
+keywords = ["cli"]
+categories = ["command-line-utilities"]
 
 [dependencies]
 dirs = "5.0"
