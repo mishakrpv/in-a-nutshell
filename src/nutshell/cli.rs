@@ -26,4 +26,5 @@ pub(crate) enum Commands {
         /// The left-hand-side pattern to remove
         lhs: String,
     },
+    Start
 }

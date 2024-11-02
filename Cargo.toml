@@ -14,3 +14,7 @@ categories = ["command-line-utilities"]
 [dependencies]
 dirs = "5.0"
 clap = { version = "4.5.20", features = ["derive"] }
+signal-hook = "0.3.17"
+rdev = "0.5.3"
+log = "0.4.22"
+env_logger = "0.11.5"
