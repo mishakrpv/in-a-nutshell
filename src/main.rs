@@ -1,29 +1,51 @@
 mod config;
+mod nutshell;
 
-use std::env;
-use std::fs::OpenOptions;
+use clap::Parser;
+use config::get_config_path;
+use nutshell::cli::{Cli, Commands};
+use std::fs::{self, OpenOptions};
 use std::io::{self, Write};
-use config::config_path;
+use std::path::PathBuf;
 
-fn main() -> io::Result<()> {
-    let args: Vec<String> = env::args().collect();
+fn remove_mapping(lhs: &str, config_path: &PathBuf) -> io::Result<()> {
+    let contents = fs::read_to_string(config_path)?;
+    let mut mappings: Vec<String> = contents.lines().map(String::from).collect();
 
-    if args.len() != 4 {
-        eprintln!("Usage: nutshell config <hotkey> <command>");
-        return Ok(());
+    mappings.retain(|mapping| !mapping.contains(lhs));
+
+    let mut file = OpenOptions::new()
+        .write(true)
+        .truncate(true)
+        .open(config_path)?;
+    for mapping in mappings {
+        writeln!(file, "{}", mapping)?;
     }
 
-    let key = &args[2];
-    let command = &args[3];
+    Ok(())
+}
 
-    let mapping = format!("map({}) to ({})\n", key, command);
+fn main() -> io::Result<()> {
+    let args: Cli = Cli::parse();
 
-    let config_path = config_path()?;
+    match args.command {
+        Commands::ConfigAdd { lhs, rhs } => {
+            let mapping = format!("map({}) to ({})\n", lhs, rhs);
+            let config_path = get_config_path()?;
 
-    let mut file = OpenOptions::new().append(true).open(&config_path)?;
-    file.write_all(mapping.as_bytes())?;
+            let mut file = OpenOptions::new().append(true).open(&config_path)?;
+            file.write_all(mapping.as_bytes())?;
+            println!("Mapping has been added: {} -> {}", lhs, rhs);
+        }
+        Commands::ConfigRemove { lhs } => {
+            let config_path = get_config_path()?;
 
-    println!("Mapping added: map({}) to ({})", key, command);
+            match remove_mapping(&lhs, &config_path) {
+                Ok(_) => println!("Mapping has been removed for: {}", lhs),
+                Err(e) => eprintln!("An error occured while removing mapping: {}", e),
+            }
+        }
+    }
 
     Ok(())
 }

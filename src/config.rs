@@ -1,13 +1,13 @@
-use std::fs::{self, OpenOptions};
-use std::path::PathBuf;
-use std::io::{self};
 use dirs::{config_dir, home_dir};
+use std::fs::{self, OpenOptions};
+use std::io::{self};
+use std::path::PathBuf;
 
-pub(crate) fn config_path() -> io::Result<PathBuf> {
+pub(crate) fn get_config_path() -> io::Result<PathBuf> {
     let potential_locations = [
-        home_dir().map(|p| p.join("config.nutshell")),
-        home_dir().map(|p| p.join(".nutshell/config.nutshell")),
         config_dir().map(|p| p.join("nutshell/config.nutshell")),
+        home_dir().map(|p| p.join(".nutshell/config.nutshell")),
+        home_dir().map(|p| p.join("config.nutshell")),
     ];
 
     for location in &potential_locations {
@@ -26,7 +26,10 @@ pub(crate) fn config_path() -> io::Result<PathBuf> {
         fs::create_dir_all(parent)?;
     }
 
-    OpenOptions::new().create(true).append(true).open(&default_location)?;
+    OpenOptions::new()
+        .create(true)
+        .append(true)
+        .open(&default_location)?;
 
     Ok(default_location)
 }
